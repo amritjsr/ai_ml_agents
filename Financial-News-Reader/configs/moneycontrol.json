@@ -1,0 +1,115 @@
+{
+  "$schema": "./schema.json",
+  "site_id": "moneycontrol",
+  "site_name": "Moneycontrol",
+  "domains": [
+    "moneycontrol.com",
+    "www.moneycontrol.com"
+  ],
+  "base_url": "https://www.moneycontrol.com",
+  "enabled": true,
+  "browser": {
+    "headless": true,
+    "timeout_ms": 30000,
+    "wait_until": "domcontentloaded",
+    "rate_limit_delay_seconds": 1.0,
+    "dismiss_selectors": [
+      "#wzrk-cancel",
+      ".modal-close",
+      ".btn_agree"
+    ]
+  },
+  "feed": {
+    "url": "https://www.moneycontrol.com/news/business/markets/",
+    "wait_for_selector": "li.clearfix",
+    "item_selector": "li.clearfix",
+    "max_items": 30,
+    "pagination": {
+      "type": "none"
+    },
+    "fields": {
+      "title": {
+        "selector": "h2 a",
+        "fallbacks": ["h3 a", "a"],
+        "attribute": "text"
+      },
+      "url": {
+        "selector": "h2 a",
+        "fallbacks": ["h3 a", "a"],
+        "attribute": "href"
+      },
+      "published_at": {
+        "selector": "span",
+        "attribute": "text"
+      },
+      "description": {
+        "selector": "p",
+        "attribute": "text"
+      },
+      "source": {
+        "selector": ".source",
+        "default": "Moneycontrol"
+      }
+    }
+  },
+  "article": {
+    "wait_for_selector": "h1.article_title, .content_wrapper, article",
+    "dismiss_selectors": [
+      "#wzrk-cancel",
+      ".modal-close"
+    ],
+    "fields": {
+      "title": {
+        "selector": "h1.article_title",
+        "fallbacks": [
+          "h1",
+          "meta[property='og:title']"
+        ],
+        "attribute": "text"
+      },
+      "published_at": {
+        "selector": ".article_schedule, time",
+        "fallbacks": [
+          "meta[property='article:published_time']"
+        ],
+        "attribute": "text",
+        "fallback_attribute": "content"
+      },
+      "author": {
+        "selector": ".article_author, .author_name",
+        "fallbacks": [
+          "meta[name='author']"
+        ],
+        "attribute": "text"
+      },
+      "description": {
+        "selector": "h2.article_desc",
+        "fallbacks": [
+          "meta[name='description']",
+          "meta[property='og:description']"
+        ],
+        "attribute": "text",
+        "fallback_attribute": "content"
+      },
+      "content": {
+        "container_selector": "div#contentinfo, div.content_wrapper, article",
+        "paragraph_selector": "p",
+        "exclude_selectors": [
+          ".ad",
+          ".tags",
+          ".social_icons",
+          ".related_box",
+          "script",
+          "style"
+        ],
+        "join_delimiter": "\n\n"
+      },
+      "tags": {
+        "selector": ".tags a, .tag_list a",
+        "attribute": "text",
+        "is_list": true
+      },
+      "source": "Moneycontrol"
+    }
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "$schema": "./schema.json",
+  "site_id": "economic_times",
+  "site_name": "The Economic Times",
+  "domains": [
+    "economictimes.indiatimes.com"
+  ],
+  "base_url": "https://economictimes.indiatimes.com",
+  "enabled": true,
+  "browser": {
+    "headless": true,
+    "timeout_ms": 30000,
+    "wait_until": "domcontentloaded",
+    "rate_limit_delay_seconds": 1.5,
+    "dismiss_selectors": [
+      "#onetrust-accept-btn-handler",
+      ".btn_agree",
+      ".ad-close"
+    ]
+  },
+  "feed": {
+    "url": "https://economictimes.indiatimes.com/markets/stocks/news",
+    "wait_for_selector": ".eachStory",
+    "item_selector": ".eachStory",
+    "max_items": 30,
+    "pagination": {
+      "type": "none"
+    },
+    "fields": {
+      "title": {
+        "selector": "h3 a",
+        "fallbacks": ["a"],
+        "attribute": "text"
+      },
+      "url": {
+        "selector": "h3 a",
+        "fallbacks": ["a"],
+        "attribute": "href"
+      },
+      "published_at": {
+        "selector": "time, .date-format",
+        "attribute": "text"
+      },
+      "description": {
+        "selector": "p",
+        "attribute": "text"
+      },
+      "source": {
+        "selector": "span.source",
+        "default": "The Economic Times"
+      }
+    }
+  },
+  "article": {
+    "wait_for_selector": "h1.artTitle, .artText, article",
+    "dismiss_selectors": [
+      "#onetrust-accept-btn-handler",
+      ".btn_agree",
+      ".popup_close"
+    ],
+    "fields": {
+      "title": {
+        "selector": "h1.artTitle",
+        "fallbacks": [
+          "h1",
+          "meta[property='og:title']"
+        ],
+        "attribute": "text"
+      },
+      "published_at": {
+        "selector": "time, .dt_publish",
+        "fallbacks": [
+          "meta[property='article:published_time']",
+          ".time_details"
+        ],
+        "attribute": "text",
+        "fallback_attribute": "content"
+      },
+      "author": {
+        "selector": ".auth_name, .author_name, .byline_row",
+        "fallbacks": [
+          "meta[name='author']"
+        ],
+        "attribute": "text"
+      },
+      "description": {
+        "selector": "h2.summary, .synopsis",
+        "fallbacks": [
+          "meta[property='og:description']",
+          "meta[name='description']"
+        ],
+        "attribute": "text",
+        "fallback_attribute": "content"
+      },
+      "content": {
+        "container_selector": "div.artText, article",
+        "paragraph_selector": "p",
+        "exclude_selectors": [
+          ".ad",
+          ".advertisement",
+          ".synopsis",
+          ".related-articles",
+          ".prime_banner",
+          "script",
+          "style"
+        ],
+        "join_delimiter": "\n\n"
+      },
+      "tags": {
+        "selector": ".tag_list a, .topics_tag a",
+        "attribute": "text",
+        "is_list": true
+      },
+      "source": "The Economic Times"
+    }
+  }
+}

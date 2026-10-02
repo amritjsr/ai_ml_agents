@@ -1,0 +1,100 @@
+{
+  "$schema": "./schema.json",
+  "site_id": "generic_article",
+  "site_name": "Generic Article Parser",
+  "domains": [
+    "*"
+  ],
+  "base_url": "https://example.com",
+  "enabled": true,
+  "browser": {
+    "headless": true,
+    "timeout_ms": 30000,
+    "wait_until": "domcontentloaded",
+    "rate_limit_delay_seconds": 0.5,
+    "dismiss_selectors": [
+      "#onetrust-accept-btn-handler",
+      ".cookie-consent-accept",
+      ".btn-accept",
+      "button[aria-label='Close']"
+    ]
+  },
+  "article": {
+    "wait_for_selector": "h1, article, main",
+    "fields": {
+      "title": {
+        "selector": "h1",
+        "fallbacks": [
+          "meta[property='og:title']",
+          "meta[name='twitter:title']",
+          "title"
+        ],
+        "attribute": "text",
+        "fallback_attribute": "content"
+      },
+      "published_at": {
+        "selector": "time",
+        "fallbacks": [
+          "meta[property='article:published_time']",
+          "meta[name='pubdate']",
+          "meta[name='publish-date']"
+        ],
+        "attribute": "datetime",
+        "fallback_attribute": "content"
+      },
+      "author": {
+        "selector": "[rel='author'], .author, .byline",
+        "fallbacks": [
+          "meta[name='author']",
+          "meta[property='article:author']"
+        ],
+        "attribute": "text",
+        "fallback_attribute": "content"
+      },
+      "description": {
+        "selector": "meta[property='og:description']",
+        "fallbacks": [
+          "meta[name='description']",
+          "meta[name='twitter:description']"
+        ],
+        "attribute": "content",
+        "fallback_attribute": "text"
+      },
+      "content": {
+        "container_selector": "article, [role='main'], main, .article-content, .story-body, .entry-content",
+        "paragraph_selector": "p",
+        "exclude_selectors": [
+          ".ad",
+          ".advertisement",
+          ".social-share",
+          ".related-articles",
+          ".newsletter",
+          "script",
+          "style",
+          "header",
+          "footer",
+          "nav"
+        ],
+        "join_delimiter": "\n\n"
+      },
+      "tags": {
+        "selector": "meta[property='article:tag'], .tags a",
+        "attribute": "content",
+        "fallback_attribute": "text",
+        "is_list": true
+      },
+      "image_url": {
+        "selector": "meta[property='og:image']",
+        "fallbacks": [
+          "meta[name='twitter:image']"
+        ],
+        "attribute": "content"
+      },
+      "source": {
+        "selector": "meta[property='og:site_name']",
+        "attribute": "content",
+        "default": "News Article"
+      }
+    }
+  }
+}

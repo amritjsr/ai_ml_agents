@@ -1,0 +1,622 @@
+{
+  "$defs": {
+    "ArticleConfig": {
+      "description": "Configuration for extracting a single news article page.",
+      "properties": {
+        "wait_for_selector": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": "h1, article",
+          "description": "Selector to wait for to confirm article page is loaded.",
+          "title": "Wait For Selector"
+        },
+        "dismiss_selectors": {
+          "description": "Selectors of cookie banners, popups, or overlays to dismiss before scraping.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Dismiss Selectors",
+          "type": "array"
+        },
+        "click_to_expand_selector": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Selector of 'Read More' or 'Expand' button to click before extraction.",
+          "title": "Click To Expand Selector"
+        },
+        "scroll_before_extract": {
+          "default": false,
+          "description": "Whether to perform a brief scroll to trigger lazy loading of article content.",
+          "title": "Scroll Before Extract",
+          "type": "boolean"
+        },
+        "fields": {
+          "$ref": "#/$defs/ArticleFieldsConfig",
+          "description": "Article field extraction configuration."
+        }
+      },
+      "title": "ArticleConfig",
+      "type": "object"
+    },
+    "ArticleFieldsConfig": {
+      "description": "Selector mappings for extracting article detail page content.",
+      "properties": {
+        "title": {
+          "$ref": "#/$defs/SelectorConfig",
+          "description": "Selector for article headline/title."
+        },
+        "published_at": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SelectorConfig"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Selector for publication date/time."
+        },
+        "author": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SelectorConfig"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Selector for article author/byline."
+        },
+        "description": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SelectorConfig"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Selector for article summary / lead / meta description."
+        },
+        "content": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ContentExtractorConfig"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Configuration for extracting full article body text."
+        },
+        "tags": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SelectorConfig"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Selector for tags, keywords, or categories."
+        },
+        "image_url": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SelectorConfig"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Selector for main article image URL."
+        },
+        "source": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SelectorConfig"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Static source name or selector to extract source.",
+          "title": "Source"
+        }
+      },
+      "title": "ArticleFieldsConfig",
+      "type": "object"
+    },
+    "BrowserConfig": {
+      "description": "Browser and network configuration for Playwright.",
+      "properties": {
+        "headless": {
+          "default": true,
+          "description": "Run browser in headless mode.",
+          "title": "Headless",
+          "type": "boolean"
+        },
+        "timeout_ms": {
+          "default": 30000,
+          "description": "Navigation and selector timeout in milliseconds.",
+          "title": "Timeout Ms",
+          "type": "integer"
+        },
+        "wait_until": {
+          "default": "domcontentloaded",
+          "description": "Playwright navigation wait condition.",
+          "enum": [
+            "domcontentloaded",
+            "load",
+            "networkidle",
+            "commit"
+          ],
+          "title": "Wait Until",
+          "type": "string"
+        },
+        "user_agent": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
+          "description": "Custom user agent string.",
+          "title": "User Agent"
+        },
+        "viewport_width": {
+          "default": 1280,
+          "description": "Browser viewport width.",
+          "title": "Viewport Width",
+          "type": "integer"
+        },
+        "viewport_height": {
+          "default": 800,
+          "description": "Browser viewport height.",
+          "title": "Viewport Height",
+          "type": "integer"
+        },
+        "rate_limit_delay_seconds": {
+          "default": 0.5,
+          "description": "Polite delay between consecutive requests.",
+          "title": "Rate Limit Delay Seconds",
+          "type": "number"
+        },
+        "extra_headers": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Additional HTTP headers sent with requests.",
+          "title": "Extra Headers",
+          "type": "object"
+        },
+        "dismiss_selectors": {
+          "description": "Global selectors for overlays, consent banners to close.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Dismiss Selectors",
+          "type": "array"
+        }
+      },
+      "title": "BrowserConfig",
+      "type": "object"
+    },
+    "ContentExtractorConfig": {
+      "description": "Configuration for extracting full article body text and paragraphs.",
+      "properties": {
+        "container_selector": {
+          "default": "article",
+          "description": "Container element holding the main article content.",
+          "title": "Container Selector",
+          "type": "string"
+        },
+        "fallbacks": {
+          "description": "Fallback container selectors.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Fallbacks",
+          "type": "array"
+        },
+        "paragraph_selector": {
+          "default": "p",
+          "description": "Selector for paragraph/text elements inside container.",
+          "title": "Paragraph Selector",
+          "type": "string"
+        },
+        "exclude_selectors": {
+          "description": "Selectors for unwanted elements (ads, related links, scripts) to exclude.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Exclude Selectors",
+          "type": "array"
+        },
+        "join_delimiter": {
+          "default": "\n\n",
+          "description": "Delimiter to join paragraphs with.",
+          "title": "Join Delimiter",
+          "type": "string"
+        },
+        "min_paragraph_length": {
+          "default": 1,
+          "description": "Minimum character length for a paragraph to be retained.",
+          "title": "Min Paragraph Length",
+          "type": "integer"
+        }
+      },
+      "title": "ContentExtractorConfig",
+      "type": "object"
+    },
+    "FeedConfig": {
+      "description": "Configuration for scraping article feeds / listing pages.",
+      "properties": {
+        "url": {
+          "description": "URL of the feed or listing page.",
+          "title": "Url",
+          "type": "string"
+        },
+        "wait_for_selector": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Selector to wait for before extracting feed items.",
+          "title": "Wait For Selector"
+        },
+        "item_selector": {
+          "description": "CSS selector identifying each individual article card/item.",
+          "title": "Item Selector",
+          "type": "string"
+        },
+        "max_items": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Maximum number of items to scrape from the feed.",
+          "title": "Max Items"
+        },
+        "allowed_domains": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional list of allowed domains for feed items. If specified, any links outside these domains are ignored. Defaults to site domains.",
+          "title": "Allowed Domains"
+        },
+        "pagination": {
+          "$ref": "#/$defs/FeedPaginationConfig",
+          "description": "Pagination configuration."
+        },
+        "fields": {
+          "$ref": "#/$defs/FeedFieldsConfig",
+          "description": "Field extraction mappings for each item."
+        }
+      },
+      "required": [
+        "url",
+        "item_selector",
+        "fields"
+      ],
+      "title": "FeedConfig",
+      "type": "object"
+    },
+    "FeedFieldsConfig": {
+      "description": "Selector mappings for article items on feed/listing pages.",
+      "properties": {
+        "title": {
+          "$ref": "#/$defs/SelectorConfig",
+          "description": "Selector for article title."
+        },
+        "url": {
+          "$ref": "#/$defs/SelectorConfig",
+          "description": "Selector for article link href."
+        },
+        "article_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SelectorConfig"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Selector or attribute for article ID (e.g. data-id)."
+        },
+        "published_at": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SelectorConfig"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Selector for publication timestamp or relative time."
+        },
+        "source": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SelectorConfig"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Selector for publication/source name."
+        },
+        "description": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SelectorConfig"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Selector for article snippet or description."
+        }
+      },
+      "required": [
+        "title",
+        "url"
+      ],
+      "title": "FeedFieldsConfig",
+      "type": "object"
+    },
+    "FeedPaginationConfig": {
+      "description": "Configuration for handling listing pagination or infinite scroll.",
+      "properties": {
+        "type": {
+          "default": "none",
+          "description": "Pagination strategy: 'none', 'scroll' (infinite scroll), or 'click' (load more button).",
+          "enum": [
+            "none",
+            "scroll",
+            "click"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "scroll_count": {
+          "default": 2,
+          "description": "Number of times to scroll down for infinite scroll.",
+          "title": "Scroll Count",
+          "type": "integer"
+        },
+        "scroll_delay_seconds": {
+          "default": 1.0,
+          "description": "Delay in seconds between consecutive scrolls.",
+          "title": "Scroll Delay Seconds",
+          "type": "number"
+        },
+        "load_more_selector": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Button selector to click for loading more items.",
+          "title": "Load More Selector"
+        }
+      },
+      "title": "FeedPaginationConfig",
+      "type": "object"
+    },
+    "SelectorConfig": {
+      "description": "Configuration for extracting a single field using CSS/XPath selectors.",
+      "properties": {
+        "selector": {
+          "description": "Primary CSS or XPath selector.",
+          "title": "Selector",
+          "type": "string"
+        },
+        "fallbacks": {
+          "description": "Fallback selectors to try if the primary selector finds nothing.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Fallbacks",
+          "type": "array"
+        },
+        "attribute": {
+          "default": "text",
+          "description": "Attribute to extract: 'text', 'inner_html', or an HTML attribute ('href', 'src', 'datetime', 'content', etc.).",
+          "title": "Attribute",
+          "type": "string"
+        },
+        "fallback_attribute": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Fallback attribute if the primary attribute is null or empty.",
+          "title": "Fallback Attribute"
+        },
+        "clean_regex": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional regex to strip/replace unwanted text patterns.",
+          "title": "Clean Regex"
+        },
+        "regex_extract": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional regex with capture group to extract a specific substring.",
+          "title": "Regex Extract"
+        },
+        "default": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Default value if element is not found.",
+          "title": "Default"
+        },
+        "is_list": {
+          "default": false,
+          "description": "If true, collects all matching elements as a list of strings (e.g. tags).",
+          "title": "Is List",
+          "type": "boolean"
+        },
+        "strip": {
+          "default": true,
+          "description": "Whether to strip leading/trailing whitespace.",
+          "title": "Strip",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "selector"
+      ],
+      "title": "SelectorConfig",
+      "type": "object"
+    }
+  },
+  "description": "Complete configuration schema for a news site scraper.",
+  "properties": {
+    "$schema": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Reference to JSON Schema for IDE validation.",
+      "title": "$Schema"
+    },
+    "site_id": {
+      "description": "Unique identifier for the site (e.g. 'zerodha_pulse', 'economic_times').",
+      "title": "Site Id",
+      "type": "string"
+    },
+    "site_name": {
+      "description": "Display name for the news site (e.g. 'Zerodha Pulse').",
+      "title": "Site Name",
+      "type": "string"
+    },
+    "domains": {
+      "description": "Domain names associated with this site (e.g. ['pulse.zerodha.com']).",
+      "items": {
+        "type": "string"
+      },
+      "title": "Domains",
+      "type": "array"
+    },
+    "base_url": {
+      "description": "Base URL of the news site.",
+      "title": "Base Url",
+      "type": "string"
+    },
+    "enabled": {
+      "default": true,
+      "description": "Whether this site scraper configuration is active.",
+      "title": "Enabled",
+      "type": "boolean"
+    },
+    "browser": {
+      "$ref": "#/$defs/BrowserConfig",
+      "description": "Browser and Playwright execution settings."
+    },
+    "feed": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/FeedConfig"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Configuration for scraping latest news feed or listing pages."
+    },
+    "article": {
+      "$ref": "#/$defs/ArticleConfig",
+      "description": "Configuration for scraping single article detail pages."
+    }
+  },
+  "required": [
+    "site_id",
+    "site_name",
+    "base_url"
+  ],
+  "title": "SiteConfig",
+  "type": "object"
+}

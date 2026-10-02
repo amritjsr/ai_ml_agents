@@ -1,0 +1,92 @@
+{
+  "$schema": "./schema.json",
+  "site_id": "zerodha_pulse",
+  "site_name": "Zerodha Pulse",
+  "domains": [
+    "pulse.zerodha.com"
+  ],
+  "base_url": "https://pulse.zerodha.com",
+  "enabled": true,
+  "browser": {
+    "headless": true,
+    "timeout_ms": 30000,
+    "wait_until": "domcontentloaded",
+    "rate_limit_delay_seconds": 1.0,
+    "dismiss_selectors": []
+  },
+  "feed": {
+    "url": "https://pulse.zerodha.com/",
+    "wait_for_selector": "ul#news li.box.item",
+    "item_selector": "ul#news li.box.item",
+    "max_items": 50,
+    "pagination": {
+      "type": "none"
+    },
+    "fields": {
+      "title": {
+        "selector": "h2.title a",
+        "attribute": "text"
+      },
+      "url": {
+        "selector": "h2.title a",
+        "attribute": "href"
+      },
+      "article_id": {
+        "selector": "h2.title a",
+        "attribute": "data-id"
+      },
+      "description": {
+        "selector": "div.desc",
+        "attribute": "text"
+      },
+      "published_at": {
+        "selector": "span.date",
+        "attribute": "title",
+        "fallback_attribute": "text"
+      },
+      "source": {
+        "selector": "span.feed",
+        "attribute": "text",
+        "clean_regex": "^[—\\-\\s]+"
+      }
+    }
+  },
+  "article": {
+    "wait_for_selector": "h1, h2.title, article",
+    "fields": {
+      "title": {
+        "selector": "h1",
+        "fallbacks": [
+          "h2.title",
+          "meta[property='og:title']"
+        ],
+        "attribute": "text"
+      },
+      "published_at": {
+        "selector": "span.date",
+        "fallbacks": [
+          "time",
+          "meta[property='article:published_time']"
+        ],
+        "attribute": "title",
+        "fallback_attribute": "text"
+      },
+      "description": {
+        "selector": "div.desc",
+        "fallbacks": [
+          "meta[name='description']"
+        ],
+        "attribute": "text"
+      },
+      "content": {
+        "container_selector": "div.desc, article",
+        "paragraph_selector": "p",
+        "exclude_selectors": [
+          "script",
+          "style"
+        ]
+      },
+      "source": "Zerodha Pulse"
+    }
+  }
+}

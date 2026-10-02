@@ -1,0 +1,163 @@
+{
+  "$schema": "./schema.json",
+  "site_id": "financialexpress",
+  "site_name": "Financial Express",
+  "domains": [
+    "financialexpress.com",
+    "www.financialexpress.com"
+  ],
+  "base_url": "https://www.financialexpress.com",
+  "enabled": true,
+  "browser": {
+    "headless": true,
+    "timeout_ms": 30000,
+    "wait_until": "domcontentloaded",
+    "rate_limit_delay_seconds": 1.0,
+    "dismiss_selectors": [
+      "#wzrk-cancel",
+      ".modal-close",
+      ".btn_agree",
+      "#onetrust-accept-btn-handler",
+      ".popup_close",
+      ".close-btn"
+    ]
+  },
+  "feed": {
+    "url": "https://www.financialexpress.com/",
+    "allowed_domains": [
+      "www.financialexpress.com"
+    ],
+    "wait_for_selector": "article",
+    "item_selector": "article",
+    "max_items": 30,
+    "pagination": {
+      "type": "none"
+    },
+    "fields": {
+      "title": {
+        "selector": ".entry-title a, h2 a, h3 a, h4 a, .post-title a",
+        "fallbacks": [
+          "a[aria-label]",
+          "figure a",
+          "a"
+        ],
+        "attribute": "text",
+        "fallback_attribute": "aria-label"
+      },
+      "url": {
+        "selector": ".entry-title a, h2 a, h3 a, h4 a, .post-title a",
+        "fallbacks": [
+          "a[aria-label]",
+          "figure a",
+          "a"
+        ],
+        "attribute": "href",
+        "clean_regex": "\\?.*$"
+      },
+      "article_id": {
+        "selector": ":scope",
+        "attribute": "data-post-id"
+      },
+      "published_at": {
+        "selector": ".written_box time, .updated time, time",
+        "attribute": "datetime",
+        "fallback_attribute": "text"
+      },
+      "description": {
+        "selector": ".entry-summary, p.post-excerpt, p",
+        "fallbacks": [
+          "h2"
+        ],
+        "attribute": "text"
+      },
+      "source": {
+        "selector": ".source",
+        "default": "Financial Express"
+      }
+    }
+  },
+  "article": {
+    "wait_for_selector": "h1, article, div.post-content",
+    "dismiss_selectors": [
+      "#wzrk-cancel",
+      ".modal-close",
+      ".popup_close",
+      ".close-btn"
+    ],
+    "fields": {
+      "title": {
+        "selector": "h1.heading-three, h1.wp-block-post-title, h1.entry-title",
+        "fallbacks": [
+          "h1",
+          "meta[property='og:title']"
+        ],
+        "attribute": "text"
+      },
+      "published_at": {
+        "selector": ".written_box time, .updated time, time[datetime]",
+        "fallbacks": [
+          "meta[property='article:published_time']",
+          "time"
+        ],
+        "attribute": "datetime",
+        "fallback_attribute": "text"
+      },
+      "author": {
+        "selector": ".written_box .author-link a, .author-link a, a[href*='/author/']",
+        "fallbacks": [
+          ".author-name",
+          "meta[name='author']"
+        ],
+        "attribute": "text"
+      },
+      "description": {
+        "selector": "h2.heading-four, h2.wp-block-post-subtitle",
+        "fallbacks": [
+          "h2",
+          "meta[name='description']",
+          "meta[property='og:description']"
+        ],
+        "attribute": "text",
+        "fallback_attribute": "content"
+      },
+      "content": {
+        "container_selector": "div.post-content, div.wp-block-post-content, .entry-content, article",
+        "paragraph_selector": "p",
+        "exclude_selectors": [
+          ".ad",
+          ".advertisement",
+          ".adcode300x250",
+          "[class*='ad-unit']",
+          "[class*='newspack-ads']",
+          ".ie-network-also-read",
+          ".stories_fe_widget",
+          ".social-share",
+          ".related-news",
+          ".related-stories",
+          ".tag-cloud",
+          "script",
+          "style",
+          "figure",
+          "iframe"
+        ],
+        "join_delimiter": "\n\n",
+        "min_paragraph_length": 15
+      },
+      "tags": {
+        "selector": "a[href*='/about/'], .wp-block-post-terms a, .post-tags a",
+        "attribute": "text",
+        "is_list": true
+      },
+      "image_url": {
+        "selector": "meta[property='og:image']",
+        "fallbacks": [
+          ".post-thumbnail img",
+          "figure.wp-block-post-featured-image img"
+        ],
+        "attribute": "content",
+        "fallback_attribute": "src"
+      },
+      "source": "Financial Express"
+    }
+  }
+}
